@@ -190,7 +190,7 @@ def display_digits_with_bboxes(digits, predictions, labels, pred_bboxes, bboxes,
 strategy = tf.distribute.get_strategy()
 strategy.num_replicas_in_sync
 
-BATCH_SIZE = 64 * strategy.num_replicas_in_sync
+BATCH_SIZE = 32 * strategy.num_replicas_in_sync
 
 def read_image_tfds(image, label):
     xmin = tf.random.uniform((), 0, 48, dtype=tf.int32)
@@ -302,7 +302,7 @@ def define_and_compile_model(inputs):
     return model
 
 # 5: Train and Validate the Model
-EPOCHS = 20
+EPOCHS = 40
 steps_per_epoch = 60000 // BATCH_SIZE
 
 checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
