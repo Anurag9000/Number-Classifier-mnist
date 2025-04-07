@@ -6,6 +6,11 @@ import tensorflow_datasets as tfds
 from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 
+def test_gpu():
+    if tf.config.list_physical_devices('GPU'):
+        print("✅ TensorFlow is using the GPU!")
+    else:
+        print("❌ No GPU detected. Using CPU.")
 # ======================
 # Data Loading & Preprocessing
 # ======================
@@ -321,8 +326,9 @@ class ObjectDetector:
 # Main Pipeline
 # ======================
 def main():
+    test_gpu()
     strategy = tf.distribute.get_strategy()
-    batch_size = 64 * strategy.num_replicas_in_sync
+    batch_size = 32 * strategy.num_replicas_in_sync
     obj_detector = ObjectDetector(strategy, batch_size)
 
     # Get datasets
@@ -337,7 +343,7 @@ def main():
 
     # Build, compile, and train the model
     obj_detector.build_and_compile_model()
-    obj_detector.train(training_dataset, validation_dataset, epochs=20, steps_per_epoch=60000 // batch_size)
+    obj_detector.train(training_dataset, validation_dataset, epochs=40, steps_per_epoch=60000 // batch_size)
     obj_detector.save_model()
 
     # Predictions on validation set
